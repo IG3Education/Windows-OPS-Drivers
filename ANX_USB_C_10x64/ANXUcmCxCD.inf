@@ -1,0 +1,93 @@
+;
+; ANXUcmCxCD.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=System ; TODO: edit Class
+ClassGuid={4D36E97D-E325-11CE-BFC1-08002BE10318} ; TODO: edit ClassGuid
+Provider="Analogix Semiconductor Inc."
+CatalogFile=ANXUcmCxCD.cat
+DriverVer = 01/25/2021,1.8.1.0
+PnpLockdown = 1
+
+;[DestinationDirs]
+;DefaultDestDir = 12
+
+; ================= Class section =====================
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+;[SourceDisksFiles]
+;ANXUcmCxCD.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Analogix,NTamd64
+
+[Analogix.NTamd64]
+%ANXUcmCxCD.DeviceDesc%=ANXUcmCxCD_Device, ACPI\ANX7447
+%ANXUcmCxCD.DeviceDesc%=ANXUcmCxCD_Device, ACPI\ANX7411; TODO: edit hw-id
+
+[ANXUcmCxCD_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+ANXUcmCxCD.sys
+
+;-------------- Service installation
+[ANXUcmCxCD_Device.NT.Services]
+AddService = ANXUcmCxCD,%SPSVCINST_ASSOCSERVICE%, ANXUcmCxCD_Service_Inst
+
+; -------------- ANXUcmCxCD driver install sections
+[ANXUcmCxCD_Service_Inst]
+DisplayName    = %ANXUcmCxCD.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\ANXUcmCxCD.sys
+
+;
+;--- ANXUcmCxCD_Device Coinstaller installation ------
+;
+
+[DestinationDirs]
+ANXUcmCxCD_Device_CoInstaller_CopyFiles = 11
+DefaultDestDir = 12
+;Drivers_Dir = 13     ;Fixed LBT-343
+;DefaultDestDir = 13
+
+[ANXUcmCxCD_Device.NT.CoInstallers]
+AddReg=ANXUcmCxCD_Device_CoInstaller_AddReg
+CopyFiles=ANXUcmCxCD_Device_CoInstaller_CopyFiles
+
+[ANXUcmCxCD_Device_CoInstaller_AddReg]
+;
+
+HKR,"WDF","WdfDirectedPowerTransitionEnable",0x00010001,1
+
+[ANXUcmCxCD_Device_CoInstaller_CopyFiles]
+;
+
+
+[SourceDisksFiles]
+;
+
+ANXUcmCxCD.sys  = 1,,
+
+[ANXUcmCxCD_Device.NT.Wdf]
+KmdfService =  ANXUcmCxCD, ANXUcmCxCD_wdfsect
+[ANXUcmCxCD_wdfsect]
+KmdfLibraryVersion = 1.23
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="Analogix Semiconductor Inc." ;TODO: Replace with your manufacturer name
+ClassName="System" ; TODO: edit ClassName
+DiskName = "ANXUcmCxCD Installation Disk"
+ANXUcmCxCD.DeviceDesc = "ANX TypeC"
+ANXUcmCxCD.SVCDESC = "Liberty Service"
